@@ -33,11 +33,38 @@ document.addEventListener("DOMContentLoaded",()=>{
         })
 
         const foodElement=drawDiv(food.x,food.y,'food');
-        gameArena.appendChild(foodElement);
+        gameArena.appendChild(foodElement)
     }
     
+    function moveFood(){
+        let newX , newY;
+        do{
+            newX=Math.floor(Math.random()*((arenaSize-cellSize)/cellSize)*cellSize);
+            newY=Math.floor(Math.random()*((arenaSize-cellSize)/cellSize)*cellSize);
+        }while(snake.some(snakeCell=>snakeCell.x===newX && snakeCell.y===newY));
+
+        food={x:newX , y:newY};
+    }
+
+    function updateSnake(){
+        //1. calculate new coordinate the snak3e head will go to 
+        const newHead={x:snake[0].x+dx ,y:snake[0].y+dy}
+        snake.unshift(newHead);
+        if(newHead.x===food.x && newHead.y===food.y){
+           //collision 
+            score+=5;
+            moveFood();
+           //move the food
+        }
+        else{
+
+        }
+        snake.pop();
+    }
+
     function gameLoop(){
         setInterval(()=>{
+            updateSnake();
             drawScoreBoard();
             drawFoodAndSnake();
         },1000);
