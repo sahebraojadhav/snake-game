@@ -7,7 +7,10 @@ document.addEventListener("DOMContentLoaded",()=>{
     let food={x:300,y:200};
     let snake=[{x:160,y:200},{x:140,y:200},{x:120,y:200}];
     let dx=cellSize;
-    dy=0;
+    let dy=0;
+    let gameSpeed=200;
+    let intervalId;
+
 
     function drawScoreBoard(){
         const scoreBoard=document.getElementById("score-board");
@@ -39,12 +42,8 @@ document.addEventListener("DOMContentLoaded",()=>{
     function moveFood(){
         let newX , newY;
         do{
-            newX=Math.floor(Math.random()*((arenaSize-cellSize)/cellSize)*cellSize);
-            console.log("answer of the following equation is ",newX);
-            console.log("arenasie ",arenaSize,"cellsize",cellSize);
-            console.log('arenaSize-cellSize',arenaSize-cellSize);
-            console.log("(arenaSize-cellSize)/cellSize",(arenaSize-cellSize)/cellSize);
-            newY=Math.floor(Math.random()*((arenaSize-cellSize)/cellSize)*cellSize);
+            newX=Math.floor(Math.random()*((arenaSize-cellSize)/cellSize))*cellSize;
+            newY=Math.floor(Math.random()*((arenaSize-cellSize)/cellSize))*cellSize;
         }while(snake.some(snakeCell=>snakeCell.x===newX && snakeCell.y===newY));
 
         food={x:newX , y:newY};
@@ -57,13 +56,22 @@ document.addEventListener("DOMContentLoaded",()=>{
         if(newHead.x===food.x && newHead.y===food.y){
            //collision 
             score+=5;
+            if(gameSpeed>30)
+             {
+                clearInterval(intervalId);
+              
+                gameSpeed-=10;
+
+                gameLoop();
+             } 
+
             moveFood();
            //move the food
         }
         else{
-
+            snake.pop();
         }
-        snake.pop();
+       
     }
 
     function isGameOver(){
@@ -83,7 +91,7 @@ document.addEventListener("DOMContentLoaded",()=>{
     }
 
     function gameLoop(){
-        setInterval(()=>{
+       intervalId=setInterval(()=>{
             if(!gameStarted) return false;
             if(isGameOver()){
                 gameStarted=false;
@@ -95,13 +103,54 @@ document.addEventListener("DOMContentLoaded",()=>{
             updateSnake();
             drawScoreBoard();
             drawFoodAndSnake();
-        },500);
+        },gameSpeed);
+    }
+
+    function changeDirection(e){
+        const LEFT_KEY=37;
+        const RIGHT_KEY=39;
+        const UP_KEY=38;
+        const DOWN_KEY=40;
+
+        const keyPressed=e.keyCode;
+
+        const isGoingUp= dy==-cellSize
+
+        const isGoingDown= dy==cellSize
+
+        const isGoingLeft=dx ==-cellSize
+
+        const isGoingRight= dx==cellSize
+
+        if(keyPressed==LEFT_KEY && !isGoingRight)
+        {
+            dy=0; dx=-cellSize
+        }
+
+        if(keyPressed==RIGHT_KEY && !isGoingLeft)
+        {
+            dy=0; dx=cellSize
+        }
+
+
+        if(keyPressed==UP_KEY && !isGoingDown){
+            dy=-cellSize; dx=0;
+        }
+
+        if(keyPressed==DOWN_KEY && !isGoingUp){
+            dy=cellSize; dx=0;
+        }
+
+
     }
 
     function runGame(){
-        gameStarted=true;
-
-        gameLoop();
+        if(!gameStarted){
+            gameStarted=true;
+            gameLoop();
+            document.addEventListener("keydown",changeDirection);
+        }
+       
     }
 
 
