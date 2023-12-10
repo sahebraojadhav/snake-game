@@ -40,6 +40,10 @@ document.addEventListener("DOMContentLoaded",()=>{
         let newX , newY;
         do{
             newX=Math.floor(Math.random()*((arenaSize-cellSize)/cellSize)*cellSize);
+            console.log("answer of the following equation is ",newX);
+            console.log("arenasie ",arenaSize,"cellsize",cellSize);
+            console.log('arenaSize-cellSize',arenaSize-cellSize);
+            console.log("(arenaSize-cellSize)/cellSize",(arenaSize-cellSize)/cellSize);
             newY=Math.floor(Math.random()*((arenaSize-cellSize)/cellSize)*cellSize);
         }while(snake.some(snakeCell=>snakeCell.x===newX && snakeCell.y===newY));
 
@@ -62,13 +66,38 @@ document.addEventListener("DOMContentLoaded",()=>{
         snake.pop();
     }
 
+    function isGameOver(){
+        //check snake body hit
+        for(i=1;i<snake.length;i++)
+        {
+            if(snake[0].x===snake[i].x && snake[0].y==snake[i].y)return ture;
+        }
+
+        const isHittingLeftWall=snake[0].x<0;
+        const isHittingTopWall=snake[0].x<0;
+        const isHittingRightWall=snake[0].x>=arenaSize;
+        const isHittingDownwall=snake[0].y>=arenaSize;
+
+        return isHittingDownwall || isHittingLeftWall || isHittingRightWall|| isHittingTopWall;
+
+    }
+
     function gameLoop(){
         setInterval(()=>{
+            if(!gameStarted) return false;
+            if(isGameOver()){
+                gameStarted=false;
+                alert(`Game over , score=${score}`);
+                document.location.reload();
+                return;
+            }
+
             updateSnake();
             drawScoreBoard();
             drawFoodAndSnake();
-        },1000);
+        },500);
     }
+
     function runGame(){
         gameStarted=true;
 
@@ -98,3 +127,5 @@ document.addEventListener("DOMContentLoaded",()=>{
     startGame();
     
 });
+
+//1:18:47
